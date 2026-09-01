@@ -10,16 +10,24 @@ public class RsaKeyGenerator {
 
     public static void main(String[] args) throws Exception {
 
-        // Created an RSA key pair generator
+        // --------------------------------------------------
+        // 1. Generate RSA key pair
+        // --------------------------------------------------
+
         KeyPairGenerator keyPairGenerator =
                 KeyPairGenerator.getInstance("RSA");
 
-        // Generated a 2048-bit RSA key pair
+        // Generate 2048-bit RSA keys
         keyPairGenerator.initialize(2048);
 
-        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        KeyPair keyPair =
+                keyPairGenerator.generateKeyPair();
 
-        // Convert the private key into PEM format
+
+        // --------------------------------------------------
+        // 2. Convert Private Key to PEM format
+        // --------------------------------------------------
+
         String privateKeyPem =
                 "-----BEGIN PRIVATE KEY-----\n"
                         + Base64.getMimeEncoder(64, new byte[]{'\n'})
@@ -28,7 +36,11 @@ public class RsaKeyGenerator {
                         )
                         + "\n-----END PRIVATE KEY-----\n";
 
-        // Convert the public key into PEM format
+
+        // --------------------------------------------------
+        // 3. Convert Public Key to PEM format
+        // --------------------------------------------------
+
         String publicKeyPem =
                 "-----BEGIN PUBLIC KEY-----\n"
                         + Base64.getMimeEncoder(64, new byte[]{'\n'})
@@ -37,28 +49,94 @@ public class RsaKeyGenerator {
                         )
                         + "\n-----END PUBLIC KEY-----\n";
 
-        // Location where our keys will be stored
-        Path certsDirectory = Path.of(
-                System.getProperty("user.dir"),
-                "src",
-                "main",
-                "resources",
-                "carts"
+
+        // --------------------------------------------------
+        // 4. Find our project directory
+        // --------------------------------------------------
+
+        Path projectDirectory =
+                Path.of(System.getProperty("user.dir"));
+
+        System.out.println(
+                "Project directory: "
+                        + projectDirectory.toAbsolutePath()
         );
+
+
+        // --------------------------------------------------
+        // 5. Create certs directory
+        // --------------------------------------------------
+
+        Path certsDirectory =
+                projectDirectory
+                        .resolve("src")
+                        .resolve("main")
+                        .resolve("resources")
+                        .resolve("certs");
 
         Files.createDirectories(certsDirectory);
 
-        // Save the private key
+        System.out.println(
+                "Keys will be stored in: "
+                        + certsDirectory.toAbsolutePath()
+        );
+
+
+        // --------------------------------------------------
+        // 6. Create private.pem
+        // --------------------------------------------------
+
+        Path privateKeyPath =
+                certsDirectory.resolve("private.pem");
+
         Files.writeString(
-                certsDirectory.resolve("private.pem"),
+                privateKeyPath,
                 privateKeyPem
         );
 
-        // Save the public key
+
+        // --------------------------------------------------
+        // 7. Create public.pem
+        // --------------------------------------------------
+
+        Path publicKeyPath =
+                certsDirectory.resolve("public.pem");
+
         Files.writeString(
-                certsDirectory.resolve("public.pem"),
+                publicKeyPath,
                 publicKeyPem
         );
+
+
+        // --------------------------------------------------
+        // 8. Verify that the files actually exist
+        // --------------------------------------------------
+
+        System.out.println();
+
+        System.out.println(
+                "Private key exists: "
+                        + Files.exists(privateKeyPath)
+        );
+
+        System.out.println(
+                "Public key exists: "
+                        + Files.exists(publicKeyPath)
+        );
+
+        System.out.println();
+
+        System.out.println(
+                "Private key location: "
+                        + privateKeyPath.toAbsolutePath()
+        );
+
+        System.out.println(
+                "Public key location: "
+                        + publicKeyPath.toAbsolutePath()
+        );
+
+        System.out.println();
 
         System.out.println(
                 "RSA key pair generated successfully."
